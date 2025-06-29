@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Proficiency Index (API) Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .input-section, .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-section h2, .results-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .committee-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .committee-toggle input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .api-result {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .api-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .eligibility {
+            margin-top: 20px;
+        }
+
+        .role-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .role-item.eligible {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .role-item.not-eligible {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            color: white;
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.3);
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .api-score {
+                font-size: 2.5rem;
+            }
+        }
+
+        .hover-effect {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-effect:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Academic  Index Calculator</h1>
+            <p>Denizli MUN Society</p>
+        </header>
+
+        <div class="content">
+            <section class="input-section hover-effect">
+                <h2>Experience Input</h2>
+                
+                <div class="committee-toggle">
+                    <input type="checkbox" id="crisisToggle">
+                    <label for="crisisToggle">Crisis/Special Committee Mode</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="delegates">Delegate Experiences:</label>
+                    <input type="number" id="delegates" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="outstanding">Outstanding Delegate Awards:</label>
+                    <input type="number" id="outstanding" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="best">Best Delegate Awards:</label>
+                    <input type="number" id="best" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="rapporteur">Rapporteur Experiences:</label>
+                    <input type="number" id="rapporteur" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="chairboard">Deputy Chair/Co-Chair/Vice Chair Experiences:</label>
+                    <input type="number" id="chairboard" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="president">President Chair Experiences:</label>
+                    <input type="number" id="president" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="assistant">Academic Assistant Experiences:</label>
+                    <input type="number" id="assistant" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="usg">Under-Secretary-General Experiences:</label>
+                    <input type="number" id="usg" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="advisor">Academic Advisor Experiences:</label>
+                    <input type="number" id="advisor" min="0" value="0">
+                </div>
+            </section>
+
+            <section class="results-section hover-effect">
+                <h2>Results</h2>
+                
+                <div class="api-result">
+                    <div class="api-score" id="apiScore">0</div>
+                    <div>API Score</div>
+                </div>
+
+                <div class="eligibility">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">Role Eligibility</h3>
+                    
+                    <div class="role-item" id="advisorRole">
+                        <span>Academic Advisor</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                    
+                    <div class="role-item" id="usgRole">
+                        <span>Under-Secretary General</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                    
+                    <div class="role-item" id="assistantRole">
+                        <span>Academic Assistant</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                    
+                    <div class="role-item" id="presidentRole">
+                        <span>President Chair</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                    
+                    <div class="role-item" id="chairboardRole">
+                        <span>Co-Chair/Vice Chair/Deputy Chair</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                    
+                    <div class="role-item" id="rapporteurRole">
+                        <span>Rapporteur</span>
+                        <span class="status-icon">❌</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <p>Enter your experiences above to calculate your Academic Proficiency Index</p>
+        </footer>
+    </div>
+
+    <script>
+        // Default coefficients
+        const defaultCoefficients = {
+            delegate: 1,
+            outstanding: 1,
+            best: 2,
+            rapporteur: 4,
+            chairboard: 3,
+            president: 4,
+            assistant: 4,
+            usg: 5,
+            advisor: 6
+        };
+
+        // Get coefficients from URL parameters or use defaults
+        function getCoefficients() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                delegate: parseInt(urlParams.get('dc')) || defaultCoefficients.delegate,
+                outstanding: parseInt(urlParams.get('oc')) || defaultCoefficients.outstanding,
+                best: parseInt(urlParams.get('bc')) || defaultCoefficients.best,
+                rapporteur: parseInt(urlParams.get('rc')) || defaultCoefficients.rapporteur,
+                chairboard: parseInt(urlParams.get('cc')) || defaultCoefficients.chairboard,
+                president: parseInt(urlParams.get('pc')) || defaultCoefficients.president,
+                assistant: parseInt(urlParams.get('ac')) || defaultCoefficients.assistant,
+                usg: parseInt(urlParams.get('uc')) || defaultCoefficients.usg,
+                advisor: parseInt(urlParams.get('adc')) || defaultCoefficients.advisor
+            };
+        }
+
+        // Calculate API score
+        function calculateAPI() {
+            const coefficients = getCoefficients();
+            const isCrisis = document.getElementById('crisisToggle').checked;
+            
+            // Adjust coefficients for crisis committees
+            if (isCrisis) {
+                coefficients.delegate += 1;
+                coefficients.outstanding += 1;
+                coefficients.best += 1;
+            }
+
+            const delegates = parseInt(document.getElementById('delegates').value) || 0;
+            const outstanding = parseInt(document.getElementById('outstanding').value) || 0;
+            const best = parseInt(document.getElementById('best').value) || 0;
+            const rapporteur = parseInt(document.getElementById('rapporteur').value) || 0;
+            const chairboard = parseInt(document.getElementById('chairboard').value) || 0;
+            const president = parseInt(document.getElementById('president').value) || 0;
+            const assistant = parseInt(document.getElementById('assistant').value) || 0;
+            const usg = parseInt(document.getElementById('usg').value) || 0;
+            const advisor = parseInt(document.getElementById('advisor').value) || 0;
+
+            const api = (delegates * coefficients.delegate) +
+                       (outstanding * coefficients.outstanding) +
+                       (best * coefficients.best) +
+                       (rapporteur * coefficients.rapporteur) +
+                       (chairboard * coefficients.chairboard) +
+                       (president * coefficients.president) +
+                       (assistant * coefficients.assistant) +
+                       (usg * coefficients.usg) +
+                       (advisor * coefficients.advisor);
+
+            document.getElementById('apiScore').textContent = api;
+            updateEligibility(api, president, chairboard, usg);
+        }
+
+        // Update role eligibility
+        function updateEligibility(api, presidentExp, chairboardExp, usgExp) {
+            const roles = [
+                {id: 'advisorRole', minApi: 35, extraReq: usgExp >= 3, name: 'Academic Advisor'},
+                {id: 'usgRole', minApi: 22, extraReq: presidentExp >= 1, name: 'Under-Secretary General'},
+                {id: 'assistantRole', minApi: 20, extraReq: true, name: 'Academic Assistant'},
+                {id: 'presidentRole', minApi: 18, extraReq: chairboardExp >= 1, name: 'President Chair'},
+                {id: 'chairboardRole', minApi: 14, extraReq: true, name: 'Co-Chair/Vice Chair/Deputy Chair'},
+                {id: 'rapporteurRole', minApi: 10, extraReq: true, name: 'Rapporteur'}
+            ];
+
+            roles.forEach(role => {
+                const element = document.getElementById(role.id);
+                const eligible = api >= role.minApi && role.extraReq;
+                
+                element.className = 'role-item ' + (eligible ? 'eligible' : 'not-eligible');
+                element.querySelector('.status-icon').textContent = eligible ? '✅' : '❌';
+            });
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateAPI);
+                input.addEventListener('change', calculateAPI);
+            });
+            
+            // Initial calculation
+            calculateAPI();
+        });
+
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.hover-effect');
+            elements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
